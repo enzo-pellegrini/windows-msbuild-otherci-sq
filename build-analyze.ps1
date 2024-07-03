@@ -55,10 +55,10 @@ rm "$env:SONAR_DIRECTORY/build-wrapper-win-x86" -Force -Recurse -ErrorAction Sil
 [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY")
 
 
-& $env:SONAR_DIRECTORY/build-wrapper-win-x86/build-wrapper-win-x86-64.exe --out-dir bw-output msbuild sonar_scanner_example.vcxproj /t:rebuild /nodeReuse:false \
-  & $env:SONAR_SCANNER_HOME/bin/sonar-scanner.bat \
-  -D"sonar.organization=enzopellegrini" \
-  -D"sonar.projectKey=enzo-pellegrini_windows-msbuild-otherci-sq" \
-  -D"sonar.sources=." \
-  -D"sonar.cfamily.compile-commands=bw-output/compile_commands.json" \
+& $env:SONAR_DIRECTORY/build-wrapper-win-x86/build-wrapper-win-x86-64.exe --out-dir bw-output msbuild sonar_scanner_example.vcxproj /t:rebuild /nodeReuse:false `
+  & $env:SONAR_SCANNER_HOME/bin/sonar-scanner.bat `
+  -D"sonar.organization=enzopellegrini" `
+  -D"sonar.projectKey=enzo-pellegrini_windows-msbuild-otherci-sq" `
+  -D"sonar.sources=." `
+  -D"sonar.cfamily.compile-commands=bw-output/compile_commands.json" `
   -D"sonar.host.url=https://sonarcloud.io"
