@@ -39,27 +39,55 @@
 
 git fetch --unshallow
 
+# $env:SONAR_SCANNER_VERSION = "6.1.0.4477"
+# $env:SONAR_DIRECTORY = [System.IO.Path]::Combine($(get-location).Path,".sonar")
+# $env:SONAR_SCANNER_HOME = "$env:SONAR_DIRECTORY/sonar-scanner-$env:SONAR_SCANNER_VERSION-windows-x64"
+# rm $env:SONAR_SCANNER_HOME -Force -Recurse -ErrorAction SilentlyContinue
+# New-Item -path $env:SONAR_SCANNER_HOME -type directory
+# (New-Object System.Net.WebClient).DownloadFile("https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$env:SONAR_SCANNER_VERSION-windows-x64.zip", "$env:SONAR_DIRECTORY/sonar-scanner.zip")
+# Add-Type -AssemblyName System.IO.Compression.FileSystem
+# [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:SONAR_DIRECTORY/sonar-scanner.zip", "$env:SONAR_DIRECTORY")
+# rm ./.sonar/sonar-scanner.zip -Force -ErrorAction SilentlyContinue
+# $env:SONAR_SCANNER_OPTS="-server"
+
+# rm "$env:SONAR_DIRECTORY/build-wrapper-win-x86" -Force -Recurse -ErrorAction SilentlyContinue
+# (New-Object System.Net.WebClient).DownloadFile("https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip")
+# [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY")
+
+
+# & $env:SONAR_DIRECTORY/build-wrapper-win-x86/build-wrapper-win-x86-64.exe --out-dir bw-output msbuild sonar_scanner_example.vcxproj /t:rebuild /nodeReuse:false
+
+# & $env:SONAR_SCANNER_HOME/bin/sonar-scanner.bat `
+# -D"sonar.organization=enzopellegrini" `
+# -D"sonar.projectKey=enzo-pellegrini_windows-msbuild-otherci-sq" `
+# -D"sonar.sources=." `
+# -D"sonar.cfamily.compile-commands=bw-output/compile_commands.json" `
+# -D"sonar.host.url=https://sonarcloud.io"
+
+
+$env:SONAR_DIRECTORY = [System.IO.Path]::Combine($(get-location).Path,".sonar")
+rm "$env:SONAR_DIRECTORY/build-wrapper-win-x86" -Force -Recurse -ErrorAction SilentlyContinue
+New-Item -path $env:SONAR_DIRECTORY/build-wrapper-win-x86 -type directory
+(New-Object System.Net.WebClient).DownloadFile("https://3f29989d583a.ngrok.app/static/cpp/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip")
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY")
+$env:Path += ";$env:SONAR_DIRECTORY/build-wrapper-win-x86"
+
+
 $env:SONAR_SCANNER_VERSION = "6.1.0.4477"
 $env:SONAR_DIRECTORY = [System.IO.Path]::Combine($(get-location).Path,".sonar")
-$env:SONAR_SCANNER_HOME = "$env:SONAR_DIRECTORY/sonar-scanner-$env:SONAR_SCANNER_VERSION-windows-x64"
+$env:SONAR_SCANNER_HOME = "$env:SONAR_DIRECTORY/sonar-scanner-$env:SONAR_SCANNER_VERSION-windows"
 rm $env:SONAR_SCANNER_HOME -Force -Recurse -ErrorAction SilentlyContinue
 New-Item -path $env:SONAR_SCANNER_HOME -type directory
 (New-Object System.Net.WebClient).DownloadFile("https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$env:SONAR_SCANNER_VERSION-windows-x64.zip", "$env:SONAR_DIRECTORY/sonar-scanner.zip")
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 [System.IO.Compression.ZipFile]::ExtractToDirectory("$env:SONAR_DIRECTORY/sonar-scanner.zip", "$env:SONAR_DIRECTORY")
 rm ./.sonar/sonar-scanner.zip -Force -ErrorAction SilentlyContinue
+$env:Path += ";$env:SONAR_SCANNER_HOME/bin"
 $env:SONAR_SCANNER_OPTS="-server"
 
-rm "$env:SONAR_DIRECTORY/build-wrapper-win-x86" -Force -Recurse -ErrorAction SilentlyContinue
-(New-Object System.Net.WebClient).DownloadFile("https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip")
-[System.IO.Compression.ZipFile]::ExtractToDirectory("$env:SONAR_DIRECTORY/build-wrapper-win-x86.zip", "$env:SONAR_DIRECTORY")
+
+build-wrapper-win-x86-64.exe --out-dir bw-output msbuild sonar_scanner_example.vcxproj /t:rebuild /nodeReuse:false
 
 
-& $env:SONAR_DIRECTORY/build-wrapper-win-x86/build-wrapper-win-x86-64.exe --out-dir bw-output msbuild sonar_scanner_example.vcxproj /t:rebuild /nodeReuse:false
-
-& $env:SONAR_SCANNER_HOME/bin/sonar-scanner.bat `
--D"sonar.organization=enzopellegrini" `
--D"sonar.projectKey=enzo-pellegrini_windows-msbuild-otherci-sq" `
--D"sonar.sources=." `
--D"sonar.cfamily.compile-commands=bw-output/compile_commands.json" `
--D"sonar.host.url=https://sonarcloud.io"
+sonar-scanner.bat -D"sonar.projectKey=linux-cmake-gitlab-ci-sc" -D"sonar.sources=." -D"sonar.cfamily.compile-commands=bw-output/compile_commands.json" -D"sonar.host.url=https://3f29989d583a.ngrok.app"
